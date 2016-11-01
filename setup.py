@@ -16,7 +16,7 @@ setup(
     version='3.2.0',
     description='Python implementation of RNCryptor',
     long_description=get_long_description(),
-    url='https://github.com/RNCryptor/RNCryptor-python',
+    url='https://github.com/vinnyt/RNCryptor-python',
     author='Yan Kalchevskiy',
     author_email='yan.kalchevskiy@gmail.com',
     license='MIT',

@@ -95,6 +95,34 @@ class RNCryptor(object):
         data = data[:-bord(data[-1])]
         return to_str(data)
 
+    def manualDecrypt(self, data, key, hmac):
+        """Decrypt `data` using `password`."""
+        data = self.pre_decrypt_data(data)
+
+        key_bytes = to_bytes(key)
+        hmac_bytes = to_bytes(hmac)
+
+        n = len(data)
+
+        version = data[0]
+        options = data[1]
+        encryption_salt = data[2:10]
+        hmac_salt = data[10:18]
+        iv = data[18:34]
+        cipher_text = data[34:n - 32]
+        hmac = data[n - 32:]
+
+        encryption_key = self._pbkdf2(password, encryption_salt)
+        hmac_key = self._pbkdf2(password, hmac_salt)
+
+        if not compare_in_constant_time(self._hmac(hmac_key, data[:n - 32]), hmac):
+            raise DecryptionError("Bad data")
+
+        decrypted_data = self._aes_decrypt(encryption_key, iv, cipher_text)
+
+        return self.post_decrypt_data(decrypted_data)
+
+
     def decrypt(self, data, password):
         """Decrypt `data` using `password`."""
         data = self.pre_decrypt_data(data)
